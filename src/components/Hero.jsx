@@ -13,9 +13,11 @@ const Hero = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
+  const [previewPosition, setPreviewPosition] = useState({ x: "50%", y: "50%" });
 
   const totalVideos = 4;
   const nextVideoRef = useRef(null);
+  const heroRef = useRef(null);
 
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
@@ -32,6 +34,16 @@ const Hero = () => {
     // 2 % 4 = 2 + 1 => 3
     // 3 % 4 = 3 + 1 => 4
     // 4 % 4 = 0 + 1 => 1
+  };
+
+  const handleMouseMove = (event) => {
+    const rect = heroRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    setPreviewPosition({ x: `${x}%`, y: `${y}%` });
   };
 
   useEffect(() => {
@@ -88,7 +100,7 @@ const Hero = () => {
   const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
 
   return (
-    <div className="relative h-dvh w-screen overflow-x-hidden">
+    <div ref={heroRef} onMouseMove={handleMouseMove} className="relative h-dvh w-screen overflow-x-hidden">
       {isLoading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
           <div className="three-body">
@@ -100,9 +112,29 @@ const Hero = () => {
       )}
       <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75">
         <div>
-          <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-            <div onClick={handleMiniVdClick} className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100">
-              <video ref={nextVideoRef} src={getVideoSrc(upcomingVideoIndex)} loop muted id="current-video" className="size-64 origin-center scale-150 object-cover object-center" onLoadedData={handleVideoLoad} />
+          <div
+            className="mask-clip-path absolute z-50 cursor-pointer overflow-hidden rounded-lg"
+            style={{
+              left: previewPosition.x,
+              top: previewPosition.y,
+              width: "clamp(6rem, 15vw, 16rem)",
+              height: "clamp(6rem, 15vw, 16rem)",
+              transform: "translate(-50%, -50%)",
+            }}
+          >
+            <div
+              onClick={handleMiniVdClick}
+              className="h-full w-full origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
+            >
+              <video
+                ref={nextVideoRef}
+                src={getVideoSrc(upcomingVideoIndex)}
+                loop
+                muted
+                id="current-video"
+                className="h-full w-full origin-center scale-150 object-cover object-center"
+                onLoadedData={handleVideoLoad}
+              />
             </div>
           </div>
 
