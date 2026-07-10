@@ -27,7 +27,10 @@ const Contact = () => {
             Let's b<b>u</b>ild the <br /> new era <br /> of g<b>a</b>ming t<b>o</b>gether
           </p>
 
-          <Button title="contact us" containerClass="mt-10" />
+          <Button
+            title="contact us"
+            containerClass="mt-10"
+          />
         </div>
       </div>
     </div>
