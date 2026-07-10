@@ -110,7 +110,7 @@ const Hero = () => {
           </div>
         </div>
       )}
-      <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75">
+      <div id="video-frame" className="relative z-40 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75">
         <div>
           <div
             className="mask-clip-path absolute z-50 cursor-pointer overflow-hidden rounded-lg"
@@ -157,10 +157,10 @@ const Hero = () => {
             </div>
           </div>
         </div>
-      </div>
       <h1 className="special-font hero-heading absolute bottom-5 right-5  z text-black">
         G<b>a</b>ming
       </h1>
+      </div>
     </div>
   );
 };
