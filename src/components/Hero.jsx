@@ -19,6 +19,8 @@ const Hero = () => {
   const nextVideoRef = useRef(null);
   const heroRef = useRef(null);
 
+  const [showPreview, setShowPreview] = useState(false);
+
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
   };
@@ -37,12 +39,22 @@ const Hero = () => {
   };
 
   const handleMouseMove = (event) => {
+    const isOverExcludedContent = document
+      .elementsFromPoint(event.clientX, event.clientY)
+      .some((element) => element.closest("[data-no-video-preview]"));
+
+    if (isOverExcludedContent) {
+      setShowPreview(false);
+      return;
+    }
+
     const rect = heroRef.current?.getBoundingClientRect();
     if (!rect) return;
 
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
+    setShowPreview(true);
     setPreviewPosition({ x: `${x}%`, y: `${y}%` });
   };
 
@@ -100,7 +112,12 @@ const Hero = () => {
   const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
 
   return (
-    <div ref={heroRef} onMouseMove={handleMouseMove} className="relative h-dvh w-screen overflow-x-hidden">
+    <div
+      ref={heroRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setShowPreview(false)}
+      className="relative h-dvh w-screen overflow-x-hidden"
+    >
       {isLoading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
           <div className="three-body">
@@ -113,7 +130,9 @@ const Hero = () => {
       <div id="video-frame" className="relative z-40 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75">
         <div>
           <div
-            className="mask-clip-path absolute z-50 cursor-pointer overflow-hidden rounded-lg"
+            className={`mask-clip-path absolute z-50 overflow-hidden rounded-lg transition-opacity duration-300 ${
+              showPreview ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
             style={{
               left: previewPosition.x,
               top: previewPosition.y,
@@ -145,21 +164,23 @@ const Hero = () => {
             G<b>a</b>ming
           </h1>
 
-          <div className="absolute left-0 top-0 z-40 size-full">
+          <div className="pointer-events-none absolute left-0 top-0 z-40">
             <div className="mt-24 px-5 sm:px-10">
-              <h1 className="special-font hero-heading text-blue-100">
+              <h1 data-no-video-preview className="pointer-events-auto inline-block leading-[0.75] special-font hero-heading text-blue-100">
                 Redefi<b>n</b>ed
               </h1>
-              <p className="mb-5 max-w-64 font-robert-regular text-blue-100">
+              <p data-no-video-preview className="pointer-events-auto mb-5 w-fit max-w-64 font-robert-regular text-blue-100">
                 Enter the Metagame Layer <br /> Unleash the Play Economy
               </p>
-              <Button id="watch-trailer" title="Watch Trailer" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1" />
+              <div data-no-video-preview className="pointer-events-auto w-fit">
+                <Button id="watch-trailer" title="Watch Trailer" leftIcon={<TiLocationArrow />} containerClass="!bg-yellow-300 flex-center gap-1" />
+              </div>
             </div>
           </div>
+          <h1 className="special-font hero-heading absolute bottom-5 right-5  z text-black" onMouseEnter={() => setShowPreview(false)}>
+            G<b>a</b>ming
+          </h1>
         </div>
-      <h1 className="special-font hero-heading absolute bottom-5 right-5  z text-black">
-        G<b>a</b>ming
-      </h1>
       </div>
     </div>
   );
